@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>   
+    <title>SUBJECT SPACES</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.10/dist/vue.js"></script>
+</head>
+
+<body>
+    
+    <!-- Elements where Vue.js will mount the application --> 
+    <div id="app">
+        <main>
+            
+            <!-- The double curly brackets is the shorter version of 'v-text' -->
+            <b><i>
+                <p v-text=' "Subject: "  +  modules.subject'>   </p>
+                <p v-text=' "Location: " +  modules.location'>  </p>
+                <p v-text=' "Price: "    +  modules.price'>     </p>
+                <p v-text=' "Spaces: "   +  modules.spaces'>    </p>
+            </b></i>
+                
+            <!-- Button will get disabled after the Spaces reach to Zero -->
+            <button v-on:click="addToCart" :disabled="numberOfSpaces == 0">
+                Add to Cart
+            </button>   
+            
+        </main>
+    </div>
+
+    <!-- Script for Vue.js -->
+    <script>
+        var app = new Vue({
+            el:'#app',
+            data:{ 
+                modules:{
+                    subject: "Math",
+                    location: "London",
+                    price: "£100",
+                    spaces: "5",
+                }
+            },
+            methods: {
+                addToCart: function (){
+                    if(this.modules.spaces > 0){
+                        this.modules.spaces--;
+                    }
+                }
+            },
+            // Computed properties used to calculate and display values based on a value or set of values in the data model.
+            computed: {
+                numberOfSpaces: function (){
+                    return this.modules.spaces >  0;
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>
