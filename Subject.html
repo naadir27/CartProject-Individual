@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Lesson.js -->
+        <!-- Module.js -->
         <script src="js/module.js"></script>
         <title>Subject Spaces</title>
         <!-- Website Icon -->
@@ -83,6 +83,14 @@
                         <button disabled="disabled" v-else>
                             <span class="fas fa-cart-plus"></span> Add to cart
                         </button>  
+
+                        <!-- Limited Stock -->
+                        <span v-if='modules.spaces === cartCount(modules.id)'>All out!</span>
+                        <span v-else-if="modules.spaces - cartCount(modules.id) < 3">
+                            Only {{modules.spaces - cartCount(modules.id)}} left!
+                        </span>
+                        <span v-else>Buy now!</span>
+
                     </div>
                 </div>
             </div>
@@ -105,14 +113,14 @@
                             <p v-text=' "Price: £"   +  modules.price'>     </p>
                         </b></i>
 
-                        <button>Delete</button>
+                        <button v-on:click="remove()">Delete</button>
                     </div>
                 </div>
                 
                 <!-- Details -->
                 <h2>Checkout</h2>
                 <p>
-                    <b>Name:</b> <input v-model.trim="order.name"/>
+                    <b>Name:</b> <input type="text" v-model.trim="order.name"/>
                 </p>
                 <p> 
                     <b>Phone Number:</b> <input type="number" v-model="order.phoneNumber"/>
@@ -137,7 +145,7 @@
                 showModule: true,
                 module: modules,
                 cart: [], //Array to store the subjects in shopping cart
-                order: {
+                order: {  //Default empty values in the textField
                     name: '',
                     phoneNumber: ''
                 },
@@ -145,14 +153,19 @@
                 orderby: 'ascending', //Default value 'Ascending'
             },
             methods: {
+                // Adding to the Cart
                 addToCart(modules) {
                     // Push the Module to Cart
                     this.cart.push(modules);
                     modules.spaces--;
                 },
+
+                // Checks whether the modules can be added or not
                 canAddToCart(modules) {
                     return modules.spaces > this.cartCount(modules.id);
                 },
+
+                // Takes the chosen module's id and adds it to cart 
                 cartCount(id) {
                     let count = 0;
                     for (let i = 0; i < this.cart.length; i++) {
@@ -161,59 +174,96 @@
                         }
                     }
                     return count;
-                },  
+                }, 
+
+                // Checks whether the user is trying to display the Checkout Page or not
                 showCheckout() { 
-                    // Ternary Operator this.showModule = this.showModule (condition)
+                    // Ternary Operator 
+                    // this.showModule = this.showModule (condition)
                     // If it is true condition will execute code 1 or execute code 2
                     this.showModule = this.showModule ? false : true;
                 },    
+
+                // Display the Order Confirmation
                 submitForm() {
                     alert('Order submitted!')
-                },       
+                },   
+
+                // Function to delete the modules in the checkout page
+                remove(id){   
+                    let index;
+
+                    // Loops through cart length
+                    for (let i = 0; i < this.cart.length; i++) {
+                        // If 'id' matches the id in cart
+                        if (this.cart[i]["id"] === id) {
+                            // set index to the index of the matched value
+                            index = i;
+                        }
+                    }
+
+                    // Splice the first instance of the index
+                    this.cart.splice(index, 1);
+
+                    // Loop through modules array
+                    for(let i = 0; i < this.module.length; i++){
+                        // If 'id' matches the module id
+                        if(this.module[i]["id"] === id){
+                        // Add a space to that Module's space attribure
+                        this.module[i].spaces = this.module[i].spaces+1
+                        }
+                    }
+
+                    // if cart length is 0
+                    if(this.cart.length === 0){
+                        // set showModule to true, this will display Module div if all items are removed
+                        this.showModule = true
+                    }
+                },    
             },
+
             // Computed properties used to calculate and display values based on a value or set of values in the data model.
             computed: {
+                
+                // Counts the moudules that have have been carted to
                 cartItemCount: function() {
                     return this.cart.length || '0';
                 },
+
+                //Sorting Function
                 sortedModules() {
                     let moduleArray = this.module.slice(0);
 
-                    // Sorting subject
+                    // Sorting Subject
                     if (this.sort === 'subject') {
-                        if (this.orderby === 'ascending') {
-                            return moduleArray.sort((a, b) => (a.subject > b.subject) ? 1 : -1);
-                        } else {
-                            return moduleArray.sort((a, b) => (a.subject < b.subject) ? 1 : -1);
-                        }
+                        if (this.orderby === 'ascending') 
+                            { return moduleArray.sort((a, b) => (a.subject > b.subject) ? 1 : -1);} 
+                        else 
+                            { return moduleArray.sort((a, b) => (a.subject < b.subject) ? 1 : -1);}
                         }
 
-                    // Sorting location
+                    // Sorting Location
                     if (this.sort === 'location') {
-                    if (this.orderby === 'ascending') {
-                        return moduleArray.sort((a, b) => (a.location > b.location) ? 1 : -1);
-                    } else {
-                        return moduleArray.sort((a, b) => (a.location < b.location) ? 1 : -1);
-                    }
+                        if (this.orderby === 'ascending') 
+                            { return moduleArray.sort((a, b) => (a.location > b.location) ? 1 : -1);}
+                        else 
+                            { return moduleArray.sort((a, b) => (a.location < b.location) ? 1 : -1);}
                     }
 
-                    // Sorting price
+                    // Sorting Price
                     if (this.sort === 'price') {
-                        if (this.orderby === 'ascending'){
-                            return moduleArray.sort((a, b) => { return a.price - b.price; });
-                        } else {
-                            return moduleArray.sort((a, b) => { return b.price - a.price; });
-                        }
+                        if (this.orderby === 'ascending')
+                            { return moduleArray.sort((a, b) => { return a.price - b.price; });}
+                        else 
+                            { return moduleArray.sort((a, b) => { return b.price - a.price; });}
                     }
 
-                    // Sorting spaces
+                    // Sorting Spaces
                     if (this.sort === 'spaces') {
-                        if (this.orderby === 'ascending'){
-                            return  moduleArray.sort((a, b) => { return a.spaces - b.spaces; });
-                            
-                        } else {
-                            return moduleArray.sort((a, b) => { return b.spaces - a.spaces; });
-                        }
+                        if (this.orderby === 'ascending')
+                            { return moduleArray.sort((a, b) => { return a.spaces - b.spaces; });}    
+                        else 
+                            { return moduleArray.sort((a, b) => { return b.spaces - a.spaces; });}
                     }
                 },
             }
