@@ -25,6 +25,27 @@
             <h1 v-text="sitename"></h1>
         </header>
 
+        <!-- Search Bar -->
+        <nav>
+            <div class="wrap">
+               <!-- Sort Radio Buttons  -->
+               <p>
+                   <input type="radio" id="ascending" value="ascending" v-model="orderby" >
+                   <label for="ascending">Ascending</label>
+                   <input type="radio" id="descending" value="descending" v-model="orderby">
+                   <label for="descending">Descending</label>
+                   <input type="radio" id="subject" value="subject" v-model="sort" >
+                   <label for="subject">Subject</label>
+                   <input type="radio" id="location" value="location" v-model="sort" >
+                   <label for="location">Location</label>
+                   <input type="radio" id="price" value="price" v-model="sort" >
+                   <label for="price">Price</label>
+                   <input type="radio" id="spaces" value="spaces" v-model="sort"> 
+                   <label for="spaces">Spaces</label>
+               </p>
+            </div>
+        </nav>
+
         <!-- Checkout -->
         <button v-on:click="showCheckout" v-if="cartItemCount > 0"> {{ cartItemCount }}
             <span class="fa-solid fa-bag-shopping"></span>
@@ -34,11 +55,12 @@
             <span class="fa-solid fa-bag-shopping"></span>
             Checkout
         </button><br>
-        
+
+        <!-- Subjects Page -->
         <main>
             <div v-if="showModule">
                 <div class="container">
-                    <div v-for="modules in module">
+                    <div v-for="modules in sortedModules">
                         <!-- Image -->
                         <figure>
                             <!-- bind the 'src' attribute to the 'product.image' in 'data' -->
@@ -114,11 +136,13 @@
                 sitename:'SUBJECT SPACES',
                 showModule: true,
                 module: modules,
-                cart: [],
+                cart: [], //Array to store the subjects in shopping cart
                 order: {
                     name: '',
                     phoneNumber: ''
                 },
+                sort: 'subject', //Default value 'Subject'
+                orderby: 'ascending', //Default value 'Ascending'
             },
             methods: {
                 addToCart(modules) {
@@ -151,6 +175,46 @@
             computed: {
                 cartItemCount: function() {
                     return this.cart.length || '0';
+                },
+                sortedModules() {
+                    let moduleArray = this.module.slice(0);
+
+                    // Sorting subject
+                    if (this.sort === 'subject') {
+                        if (this.orderby === 'ascending') {
+                            return moduleArray.sort((a, b) => (a.subject > b.subject) ? 1 : -1);
+                        } else {
+                            return moduleArray.sort((a, b) => (a.subject < b.subject) ? 1 : -1);
+                        }
+                        }
+
+                    // Sorting location
+                    if (this.sort === 'location') {
+                    if (this.orderby === 'ascending') {
+                        return moduleArray.sort((a, b) => (a.location > b.location) ? 1 : -1);
+                    } else {
+                        return moduleArray.sort((a, b) => (a.location < b.location) ? 1 : -1);
+                    }
+                    }
+
+                    // Sorting price
+                    if (this.sort === 'price') {
+                        if (this.orderby === 'ascending'){
+                            return moduleArray.sort((a, b) => { return a.price - b.price; });
+                        } else {
+                            return moduleArray.sort((a, b) => { return b.price - a.price; });
+                        }
+                    }
+
+                    // Sorting spaces
+                    if (this.sort === 'spaces') {
+                        if (this.orderby === 'ascending'){
+                            return  moduleArray.sort((a, b) => { return a.spaces - b.spaces; });
+                            
+                        } else {
+                            return moduleArray.sort((a, b) => { return b.spaces - a.spaces; });
+                        }
+                    }
                 },
             }
         });
