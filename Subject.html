@@ -1,34 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>   
-    <title>SUBJECT SPACES</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.10/dist/vue.js"></script>
-    <script src="/js/module.js" type="text/javascript"></script>
-</head>
+    <head>   
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Lesson.js -->
+        <script src="js/module.js"></script>
+        <title>Subject Spaces</title>
+        <!-- Website Icon -->
+        <link rel="icon" type="image/x-icon" href="images/icon.png">
+        <!-- Stylesheet -->
+        <link rel="stylesheet" href="styles.css">
+        <!-- Reference for the Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+        <!-- Reference for the Vue.js -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.10/dist/vue.js"></script>
+    </head>
 
 <body>
     
     <!-- Elements where Vue.js will mount the application --> 
     <div id="app">
+        <header>
+            <h1 v-text="sitename"></h1>
+        </header>
         <main>
-            <div v-for="module in modules">
-            <figure>
-                <!-- bind the 'src' attribute to the 'modules.image' in 'data' -->
-                <img v-bind:src="module.image" width=200 height=200>
-            </figure>
-            <!-- Details -->
-            <b><i>
-                <p v-text=' "Subject: "  +  module.subject'>   </p>
-                <p v-text=' "Location: " +  module.location'>  </p>
-                <p v-text=' "Price: "    +  module.price'>     </p>
-                <p v-text=' "Spaces: "   +  module.spaces'>    </p>
-            </b></i>
-                
-            <!-- Button will get disabled after the Spaces reach to Zero -->
-            <button v-on:click="addToCart" :disabled="numberOfSpaces == 0">
-                Add to Cart
-            </button>   
-        </div>
+            <!-- <div v-if="showModule"> -->
+                <div class="container">
+                    <div v-for="modules in module">
+                        <!-- Image -->
+                        <figure>
+                            <!-- bind the 'src' attribute to the 'product.image' in 'data' -->
+                            <img v-bind:src="modules.image" width=200 height=200>
+                        </figure> 
+
+                        <!-- Details -->
+                        <b><i>
+                            <p v-text=' "Subject: "  +  modules.subject'>   </p>
+                            <p v-text=' "Location: " +  modules.location'>  </p>
+                            <p v-text=' "Price: £"   +  modules.price'>     </p>
+                            <p v-text=' "Spaces: "   +  modules.spaces'>    </p>
+                        </b></i>
+
+                        <!-- Add To Cart -->
+                        <button v-on:click='addToCart(modules) ' v-if='canAddToCart(modules)'>
+                            <span class="fas fa-cart-plus"></span> Add to cart
+                        </button>
+
+                        <button disabled="disabled" v-else>
+                            <span class="fas fa-cart-plus"></span> Add to cart
+                        </button>  
+                    </div>
+                </div>
+            <!-- </div> -->
         </main>
     </div>
 
@@ -37,20 +61,32 @@
         var app = new Vue({
             el:'#app',
             data:{ 
-                modules: module,
+                sitename:'SUBJECT SPACES',
+                module: modules,
+                cart: [],
             },
             methods: {
-                addToCart: function (){
-                    if(this.modules.spaces > 0){
-                        this.modules.spaces--;
+                addToCart(modules) {
+                    // Push the Module to Cart
+                    this.cart.push(modules);
+                    modules.spaces--;
+                },
+                canAddToCart(modules) {
+                    return modules.spaces > this.cartCount(modules.id);
+                },
+                cartCount(id) {
+                    let count = 0;
+                    for (let i = 0; i < this.cart.length; i++) {
+                        if (this.cart[i] === id) {
+                            count++;
+                        }
                     }
-                }
+                    return count;
+                },             
             },
             // Computed properties used to calculate and display values based on a value or set of values in the data model.
             computed: {
-                numberOfSpaces: function (){
-                    return this.modules.spaces >  0;
-                }
+
             }
         });
     </script>

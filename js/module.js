@@ -1,5 +1,5 @@
 //module.js
-let module = [
+let modules = [
     {
         "id": 10,
         "subject": "Mathematics",
