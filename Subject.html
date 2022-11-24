@@ -23,8 +23,14 @@
     <div id="app">
         <header>
             <h1 v-text="sitename"></h1>
+            <!-- Checkout -->
+            <button v-on:click="showCheckout"> {{ cartItemCount }}
+                <span class="fa-solid fa-bag-shopping"></span>
+                Checkout
+            </button>
         </header>
         <main>
+            <div v-if="showModule">
                 <div class="container">
                     <div v-for="modules in module">
                         <!-- Image -->
@@ -42,7 +48,7 @@
                         </b></i>
 
                         <!-- Add To Cart -->
-                        <button v-on:click='addToCart(modules) ' v-if='canAddToCart(modules)'>
+                        <button v-on:click='addToCart(modules)' v-if='canAddToCart(modules)'>
                             <span class="fas fa-cart-plus"></span> Add to cart
                         </button>
 
@@ -51,8 +57,22 @@
                         </button>  
                     </div>
                 </div>
+            </div>
+            <!-- Checkout Page -->
+            <div v-else>
+                <!-- Details -->
+                <h2>Checkout</h2>
+                <p>
+                    <b>Name:</b> <input v-model.trim="order.name"/>
+                </p>
+                <p> 
+                    <b>Phone Number:</b> <input type="number" v-model="order.phoneNumber"/>
+                </p>
+                <button v-on:click="submitForm">Place Order</button>
+            </div>
         </main>
     </div>
+
 
     <!-- Script for Vue.js -->
     <script>
@@ -60,8 +80,13 @@
             el:'#app',
             data:{ 
                 sitename:'SUBJECT SPACES',
+                showModule: true,
                 module: modules,
                 cart: [],
+                order: {
+                    name: '',
+                    phoneNumber: ''
+                },
             },
             methods: {
                 addToCart(modules) {
@@ -80,11 +105,21 @@
                         }
                     }
                     return count;
-                },             
+                },  
+                showCheckout() { 
+                    // Ternary Operator this.showModule = this.showModule (condition)
+                    // If it is true condition will execute code 1 or execute code 2
+                    this.showModule = this.showModule ? false : true;
+                },    
+                submitForm() {
+                    alert('Order submitted!')
+                },       
             },
             // Computed properties used to calculate and display values based on a value or set of values in the data model.
             computed: {
-
+                cartItemCount: function() {
+                    return this.cart.length || '0';
+                },
             }
         });
     </script>
