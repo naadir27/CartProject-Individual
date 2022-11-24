@@ -1,5 +1,5 @@
-//lesson.js
-let modules = [
+//module.js
+let module = [
     {
         "id": 10,
         "subject": "Mathematics",
