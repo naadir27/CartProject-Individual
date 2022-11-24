@@ -23,12 +23,18 @@
     <div id="app">
         <header>
             <h1 v-text="sitename"></h1>
-            <!-- Checkout -->
-            <button v-on:click="showCheckout"> {{ cartItemCount }}
-                <span class="fa-solid fa-bag-shopping"></span>
-                Checkout
-            </button>
         </header>
+
+        <!-- Checkout -->
+        <button v-on:click="showCheckout" v-if="cartItemCount > 0"> {{ cartItemCount }}
+            <span class="fa-solid fa-bag-shopping"></span>
+            Checkout
+        </button>
+        <button disabled="disabled" v-else> {{ cartItemCount }}
+            <span class="fa-solid fa-bag-shopping"></span>
+            Checkout
+        </button><br>
+        
         <main>
             <div v-if="showModule">
                 <div class="container">
@@ -58,8 +64,29 @@
                     </div>
                 </div>
             </div>
+
             <!-- Checkout Page -->
             <div v-else>
+                <div class="container">
+                    <!-- Added to Cart -->
+                    <div v-for="modules in cart">   
+                        <!-- Image -->
+                        <figure>
+                            <!-- bind the 'src' attribute to the 'modules.image' in 'data' -->
+                            <img v-bind:src="modules.image" width=200 height=200>
+                        </figure> 
+
+                        <!-- Details -->
+                        <b><i>
+                            <p v-text=' "Subject: "  +  modules.subject'>   </p>
+                            <p v-text=' "Location: " +  modules.location'>  </p>
+                            <p v-text=' "Price: £"   +  modules.price'>     </p>
+                        </b></i>
+
+                        <button>Delete</button>
+                    </div>
+                </div>
+                
                 <!-- Details -->
                 <h2>Checkout</h2>
                 <p>
@@ -68,7 +95,12 @@
                 <p> 
                     <b>Phone Number:</b> <input type="number" v-model="order.phoneNumber"/>
                 </p>
-                <button v-on:click="submitForm">Place Order</button>
+
+                <!-- Submit Form -->
+                <button v-on:click="submitForm"  
+                    v-if="/^(?!\s*$)[a-zA-Z.+\s'-]+$/.test(this.order.name) && /^(?!\s*$)[0-9.+\s'-]+$/.test(this.order.phoneNumber) && this.order.phoneNumber.length === 10" >
+                    Place Order</button>
+                <button v-on:click="submitForm" disabled v-else>Place Order</button>
             </div>
         </main>
     </div>
