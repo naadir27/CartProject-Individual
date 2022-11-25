@@ -28,6 +28,9 @@
         <!-- Search Bar -->
         <nav>
             <div class="wrap">
+                <div class="search">
+                    <input id="search" type="search" v-model="search" placeholder="Search" />
+                </div>
                <!-- Sort Radio Buttons  -->
                <p>
                    <input type="radio" id="ascending" value="ascending" v-model="orderby" >
@@ -43,15 +46,16 @@
                    <input type="radio" id="spaces" value="spaces" v-model="sort"> 
                    <label for="spaces">Spaces</label>
                </p>
+            
             </div>
         </nav>
 
         <!-- Checkout -->
-        <button v-on:click="showCheckout" v-if="cartItemCount > 0"> {{ cartItemCount }}
+        <button v-on:click="showCheckout" v-if="cartobjectCount > 0"> {{ cartobjectCount }}
             <span class="fa-solid fa-bag-shopping"></span>
             Checkout
         </button>
-        <button disabled="disabled" v-else> {{ cartItemCount }}
+        <button disabled="disabled" v-else> {{ cartobjectCount }}
             <span class="fa-solid fa-bag-shopping"></span>
             Checkout
         </button><br>
@@ -90,7 +94,6 @@
                             Only {{modules.spaces - cartCount(modules.id)}} left!
                         </span>
                         <span v-else>Buy now!</span>
-
                     </div>
                 </div>
             </div>
@@ -113,7 +116,7 @@
                             <p v-text=' "Price: £"   +  modules.price'>     </p>
                         </b></i>
 
-                        <button v-on:click="remove()">Delete</button>
+                        <button v-on:click="remove(modules.id)">Delete</button>
                     </div>
                 </div>
                 
@@ -152,6 +155,7 @@
                 },
                 sort: 'subject', //Default value 'Subject'
                 orderby: 'ascending', //Default value 'Ascending'
+                search: '',
             },
             methods: {
                 // Adding to the Cart
@@ -190,34 +194,29 @@
                     alert('Order submitted!')
                 },   
 
+                findModule(id){
+                    for(let i=0; i < this.module.length;i++){
+                        if (this.module[i].id === id){
+                            return this.module[i];
+                        }
+                    }
+                },
                 // Function to delete the modules in the checkout page
                 remove(id){   
-                    let index;
 
                     // Loops through cart length
                     for (let i = 0; i < this.cart.length; i++) {
                         // If 'id' matches the id in cart
-                        if (this.cart[i]["id"] === id) {
+                        if (this.cart[i].id === id) {
                             // set index to the index of the matched value
-                            index = i;
-                        }
-                    }
-
-                    // Splice the first instance of the index
-                    this.cart.splice(index, 1);
-
-                    // Loop through modules array
-                    for(let i = 0; i < this.module.length; i++){
-                        // If 'id' matches the module id
-                        if(this.module[i]["id"] === id){
-                        // Add a space to that Module's space attribure
-                        this.module[i].spaces = this.module[i].spaces+1
+                            this.cart.splice(i, 1);
+                            this.findModule(id).spaces+=1;
                         }
                     }
 
                     // if cart length is 0
                     if(this.cart.length === 0){
-                        // set showModule to true, this will display Module div if all items are removed
+                        // set showLesson to true, this will display lesson div if all items are removed
                         this.showModule = true
                     }
                 },    
@@ -227,16 +226,28 @@
             computed: {
                 
                 // Counts the moudules that have have been carted to
-                cartItemCount: function() {
+                cartobjectCount: function() {
                     return this.cart.length || '0';
                 },
 
-                //Sorting Function
+                //Search and Sorting Function
                 sortedModules() {
-                    let moduleArray = this.module.slice(0);
 
+                    //Search Function
+                    let moduleArray = this.module.slice(0);
+                    if (this.search != "" && this.search) {
+                        let moduleArray = this.module;
+                        moduleArray = moduleArray.filter((object) => {
+                            return (
+                                object.subject.toUpperCase().includes(this.search.toUpperCase()) ||
+                                object.location.toUpperCase().includes(this.search.toUpperCase())
+                            );
+                    });
+                        return moduleArray;
+                    }
+                        
                     // Sorting Subject
-                    if (this.sort === 'subject') {
+                    else if (this.sort === 'subject') {
                         if (this.orderby === 'ascending') 
                             { return moduleArray.sort((a, b) => (a.subject > b.subject) ? 1 : -1);} 
                         else 
