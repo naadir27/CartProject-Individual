@@ -86,7 +86,7 @@
 
                         <!-- Limited Stock -->
                         <span v-if='modules.spaces === cartCount(modules.id)'>All out!</span>
-                        <span v-else-if="modules.spaces - cartCount(modules.id) < 3">
+                        <span v-else-if="modules.spaces - cartCount(modules.id) <= 3">
                             Only {{modules.spaces - cartCount(modules.id)}} left!
                         </span>
                         <span v-else>Buy now!</span>
@@ -138,6 +138,7 @@
 
     <!-- Script for Vue.js -->
     <script>
+        //Instances of Vue.js
         var app = new Vue({
             el:'#app',
             data:{ 
